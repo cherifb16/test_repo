@@ -1,0 +1,13 @@
+<% provide(:title, @user.name) %>
+<%= render "profile_format", user: @user %>
+<%= render "my_nav", user: @user %>
+
+<% issue_count = 0 %>
+<% @issues&.each do |issue| %>
+  <% issue_count += 1 %>
+  <%= render "issues/issue", issue: issue %>
+<% end %>
+
+<% if issue_count.zero? %>
+  <h4 class="blank-danger"><%= t("views.blank") %></h4>
+<% end %>

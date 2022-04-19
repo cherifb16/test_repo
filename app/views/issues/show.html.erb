@@ -1,0 +1,21 @@
+<% provide(:title, t("views.issues.show.title")) %>
+<div class="issue-show-container" id="issue-top">
+  <%= render @issue %>
+  <div class="default-container">
+    <%= @issue.description %>
+  </div>
+  <div class="btn3-container">
+    <%= link_to t("views.btn.edit"), edit_issue_path(@issue), class: "btn btn-success" %>
+    <%= link_to t("views.btn.delete"), issue_path(@issue), class: "btn btn-danger", data: {confirm: t("views.issues.confirm.delete")}, method: :delete %>
+    <%= link_to t("views.btn.comment"), "#comment-btn-", class: "btn btn-info" %>
+  </div>
+</div>
+
+<div class="comments-container">
+  <h2><%= Comment.model_name.human %></h2>
+  <div id="comments-area">
+    <%= render @comments, issue: @issue %>
+  </div>
+</div>
+
+<%= render "comments/form", issue: @issue, comment: @comment %>

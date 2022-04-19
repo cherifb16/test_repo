@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IssuesApp</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14" defer></script>
+    <script src="https://unpkg.com/vue-multiselect@2.1.4" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+    <%= stylesheet_link_tag 'https://fonts.googleapis.com/icon?family=Material+Icons', media: 'all' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.4.1/jquery.jscroll.min.js"></script>
+  </head>
+
+  <body>
+    <div class="all-container" id="vanta-background">
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <%= link_to t("views.home.index.title"), root_path, class: "navbar-brand" %>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <% if user_signed_in? %>
+              <% if current_user&.admin? %>
+                <li class="nav-item <%= activate_css(:users, :index)%>">
+                  <%= link_to t("admin.actions.dashboard.title"), rails_admin_path, class:"nav-link" %>
+                </li>
+              <% end %>
+              <% if current_user.mentor? %>
+                <li class="nav-item <%= activate_css(:users, :index)%>">
+                  <%= link_to t("views.users.index.title"), users_path, class:"nav-link" %>
+                </li>
+              <% end %>
+              <li class="nav-item pc-view <%= activate_css(:users, :show)%>">
+                <%= link_to current_user.name, user_path(current_user), class:"nav-link" %>
+              </li>
+              <li class="nav-item pc-view <%= activate_css(:notifications, :index)%>">
+                <%= link_to(user_notifications_path(current_user), class: "nav-link") do %>
+                  <% if (unread = current_user.notifications.unreads.presence) %>
+                    <span class="material-icons text-warning">notifications_active</span>
+                    <small class="text-warning"><%= "#{unread.size}" %></small>
+                  <% else %>
+                    <span class="material-icons">notifications_none</span><small>0</small>
+                  <% end %>
+                <% end %>
+              </li>
+              <li class="nav-item pc-view <%= activate_css(:issues, :index)%>">
+                <%= link_to t("views.issues.index.title"), issues_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item pc-view <%= activate_css(:issues, :new)%>">
+                <%= link_to t("views.issues.new.title"), new_issue_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item <%= activate_css(:sessions, :destroy)%>">
+                <%= link_to t("devise.sessions.new.sign_out"), destroy_user_session_path, method: :delete, class:"nav-link" %>
+              </li>
+            <% else %>
+              <li class="nav-item <%= activate_css(:sessions, :guest_sign_in) %>">
+                <%= link_to t("devise.sessions.new.guest_admin_sign_in"), users_guest_sign_in_path(admin: true), method: :post, class: "nav-link" %>
+              </li>
+              <li class="nav-item <%= activate_css(:sessions, :guest_sign_in) %>">
+                <%= link_to t("devise.sessions.new.guest_sign_in"), users_guest_sign_in_path, method: :post, class: "nav-link" %>
+              </li>
+              <li class="nav-item <%= activate_css(:sessions, :new) %>">
+                <%= link_to t("devise.sessions.new.sign_in"), new_user_session_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item <%= activate_css(:registrations, :new) %>">
+                <%= link_to t("devise.registrations.new.sign_up"), new_user_registration_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <% flash.each do |key, message| %>
+        <%= content_tag :div, message, class: "alert alert-#{translate_css(key)}" %>
+      <% end %>
+      <div class="container">
+        <%= yield %>
+      </div>
+    </main>
+    <footer class="container-fluid footer">
+      <%= render "shared/menu" %>
+    </footer>
+  </div>
+  </body>
+</html>

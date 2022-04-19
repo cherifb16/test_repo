@@ -1,0 +1,27 @@
+<% provide(:title, t("views.issues.index.title")) %>
+<h1><%= t("views.issues.index.title") %></h1>
+<%= render "search", q: @q, show_collapse: "show" %>
+
+<nav class="sorts-container">
+  <%= sort_link @q, :title, class: "sort-link", id: "sort-issue-title" %>
+  <%= sort_link @q, :user_name, class: "sort-link", id: "sort-issue-user" %>
+  <%= sort_link @q, :favorites_count, Favorite.model_name.human, class: "sort-link", id: "sort-favorites_count" %>
+  <%= sort_link @q, :stocks_count, Stock.model_name.human, class: "sort-link", id: "sort-stocks_count" %>
+  <%= sort_link @q, :created_at, class: "sort-link", id: "sort-issue-created_at" %>
+</nav>
+
+<div class="issues-container">
+  <div class="jscroll">
+    <% issue_count = 0 %>
+    <% @issues.each do |issue| %>
+      <% if issue.accessible?(current_user) %>
+        <% issue_count += 1 %>
+        <%= render "issue", issue: issue %>
+      <% end %>
+    <% end %>
+    <%= paginate @issues %>
+  </div>
+</div>
+<% if issue_count.zero? %>
+  <h4 class="blank-danger"><%= t("views.blank") %></h4>
+<% end %>
